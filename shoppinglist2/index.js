@@ -1,16 +1,21 @@
 'use strict';
 
-const STORE = [
-  {name: "apples", checked: false},
-  {name: "oranges", checked: false},
-  {name: "milk", checked: true},
-  {name: "bread", checked: false}
-];
+const STORE = {
+  items: [
+  {name: "apples", id: 1 ,checked: false},
+  {name: "oranges", id: 2, checked: false},
+  {name: "milk", id: 3, checked: true},
+  {name: "bread", id: 4, checked: false}
+  ],
+  
+  hideCompleted: false, 
+
+}
 
 
 function generateItemElement(item, itemIndex, template) {
   return `
-    <li class="js-item-index-element" data-item-index="${itemIndex}">
+    <li class="js-item-index-element" data-item-index="${item.id}">
       <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}">${item.name}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
@@ -25,8 +30,6 @@ function generateItemElement(item, itemIndex, template) {
 
 
 function generateShoppingItemsString(shoppingList) {
-  console.log("Generating shopping list element");
-
   const items = shoppingList.map((item, index) => generateItemElement(item, index));
   
   return items.join("");
@@ -35,17 +38,25 @@ function generateShoppingItemsString(shoppingList) {
 
 function renderShoppingList() {
   // render the shopping list in the DOM
-  console.log('`renderShoppingList` ran');
-  const shoppingListItemsString = generateShoppingItemsString(STORE);
+  // const allItems = generateShoppingItemsString(STORE.items);
+  // const filteredItems = generateShoppingItemsString(STORE.items.filter(item => item.checked === false));
+  let shoppingListItemsString = generateShoppingItemsString(STORE.items);
+  
+  if (STORE.hideCompleted === true){
+    shoppingListItemsString = generateShoppingItemsString(STORE.items.filter(item => item.checked === false)) ;
+  }
+
+
 
   // insert that HTML into the DOM
   $('.js-shopping-list').html(shoppingListItemsString);
+  
 }
 
 
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.push({name: itemName, checked: false});
+  STORE.items.push({name: itemName, id: STORE.items.length + 1, checked: false});
 }
 
 function handleNewItemSubmit() {
@@ -61,7 +72,7 @@ function handleNewItemSubmit() {
 
 function toggleCheckedForListItem(itemIndex) {
   console.log("Toggling checked property for item at index " + itemIndex);
-  STORE[itemIndex].checked = !STORE[itemIndex].checked;
+  STORE.items.find(element => element.id === itemIndex).checked = !STORE.items.find(element => element.id === itemIndex).checked;
 }
 
 
@@ -74,8 +85,9 @@ function getItemIndexFromElement(item) {
 
 function handleItemCheckClicked() {
   $('.js-shopping-list').on('click', `.js-item-toggle`, event => {
-    console.log('`handleItemCheckClicked` ran');
     const itemIndex = getItemIndexFromElement(event.currentTarget);
+    console.log(itemIndex,event.currentTarget);
+
     toggleCheckedForListItem(itemIndex);
     renderShoppingList();
   });
@@ -83,7 +95,8 @@ function handleItemCheckClicked() {
 
 function deleteListItem(itemIndex) {
   console.log('delete check for item');
-  STORE.splice(itemIndex, 1);
+  // STORE.items.splice(STORE.items.find(element => element.id === itemIndex).id - 1, 1);
+  STORE.items = STORE.items.filter(element => element.id !== itemIndex);
 }
 
 function handleDeleteItemClicked() {
@@ -93,8 +106,24 @@ function handleDeleteItemClicked() {
     deleteListItem(itemIndex);
     renderShoppingList();
   });
-  console.log('`handleDeleteItemClicked` ran')
 }
+
+
+function toggleHideCompleted(){
+  STORE.hideCompleted = !STORE.hideCompleted;
+  console.log('hidecompleted is ' + STORE.hideCompleted);
+}
+
+
+function handleToggleBox() {
+  $('#checkBox').change(function() {
+    console.log('toggle box clicked');
+    toggleHideCompleted();
+    renderShoppingList();
+
+  })
+}
+
 
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
@@ -105,6 +134,7 @@ function handleShoppingList() {
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
+  handleToggleBox();
 }
 
 // when the page loads, call `handleShoppingList`
