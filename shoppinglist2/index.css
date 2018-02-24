@@ -50,6 +50,10 @@ button:hover {
   text-decoration: line-through;
 }
 
-.toggle-box {
+.toggle-box, #search-bar {
   padding: 10px 0 10px 0;
+}
+
+#edit-button-form {
+  display: inline-block;
 }
