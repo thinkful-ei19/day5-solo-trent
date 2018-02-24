@@ -26,8 +26,8 @@ function generateItemElement(item) {
         <button class="shopping-item-delete js-item-delete">
             <span class="button-label">delete</span>
         </button>
-        <form id="edit-button-form">
-          <input type="text" name="edit-button-entry" class="edit-button-entry" placeholder="Enter new item here">
+        <form class="edit-button-form">
+          <input type="text" name="edit-button-entry" class="${item.id}-edit-button-entry" placeholder="Enter new item here">
           <button type="submit">Edit</button>
         </form>
         </button>
@@ -75,8 +75,8 @@ function handleNewItemSubmit() {
   $('#js-shopping-list-form').submit(function(event) {
     event.preventDefault();
     const newItemName = $('.js-shopping-list-entry').val();
-    $('.js-shopping-list-entry').val('');
     addItemToShoppingList(newItemName);
+    this.reset();
     renderShoppingList();
   });
 }
@@ -152,24 +152,25 @@ function handleSearchBar() {
   })
 }
 
+// fix these last two functions
 
 
 function editListItem(itemId, editedName) {
   let itemsStoreIndex = STORE.items.findIndex(listObj => listObj.id === itemId);
   STORE.items[itemsStoreIndex].name = editedName;
-  // console.log();
 }
 
 
 function handleEditItem() {
-  $('.js-shopping-list').on('click', `.js-item-edit`, event => {
+  $('.js-shopping-list').on('submit', `.edit-button-form`, event => {
+    event.preventDefault();
     const itemId = getItemIdFromElement(event.currentTarget);
-    // event listener to submit the input
-    // take user input and change store
-    // editListItem(itemId, editedName);
+    const editedName = $(`.${itemId}-edit-button-entry`).val();
+    editListItem(itemId, editedName);
     renderShoppingList();
   });
 }
+
 
 
 

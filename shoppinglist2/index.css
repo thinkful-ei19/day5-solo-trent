@@ -54,6 +54,6 @@ button:hover {
   padding: 10px 0 10px 0;
 }
 
-#edit-button-form {
+.edit-button-form {
   display: inline-block;
 }
